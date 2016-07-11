@@ -79,6 +79,7 @@ public class SocketClient
                 try
                 {
                     Log.e("socket", "send ready");
+                    mOutputStream.write(msg.getBytes());//one write operation is corresponding to one TCP package
                     mOutputStream.write(msg.getBytes());
                     Log.e("socket", "send over");
                 }
