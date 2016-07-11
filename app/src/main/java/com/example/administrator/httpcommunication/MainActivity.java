@@ -10,6 +10,7 @@ public class MainActivity extends Activity
 {
 
     private TextView mTextView;
+    private SocketClient mSocketClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -18,24 +19,50 @@ public class MainActivity extends Activity
         setContentView(R.layout.activity_main);
 
         mTextView = (TextView) findViewById(R.id.textview);
+        mSocketClient = new SocketClient();
     }
 
     public void findit(View view) throws Exception
     {
-//        translateMyWordByGet();
-//        translateMyWordByHttpGet();
+        //        translateMyWordByGet();
+        //        translateMyWordByHttpGet();
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                socketTest();
+            }
+        }).start();
+    }
+
+    private void socketTest()
+    {
+        while (mSocketClient.getSocket() == null || !mSocketClient.getSocket().isConnected())
+        {
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        mSocketClient.sendAndRcv("client: i come from client");
     }
 
     public void translateMyWordByHttpGet()
     {
-        AsyncTask asyncTask=new AsyncTask()
+        AsyncTask asyncTask = new AsyncTask()
         {
             @Override
             protected String doInBackground(Object[] params)
             {
                 try
                 {
-                    TranslateMyWordByHttpGet translateMyWordByHttpGet=new TranslateMyWordByHttpGet(params[0].toString());
+                    TranslateMyWordByHttpGet translateMyWordByHttpGet = new TranslateMyWordByHttpGet(params[0].toString());
                     return translateMyWordByHttpGet.getByHttpGet();
                 }
                 catch (Exception e)
@@ -57,7 +84,7 @@ public class MainActivity extends Activity
 
     private void translateMyWordByGet()
     {
-        TranslateMyWordByUrlConnectionGet translateMyWordByUrlConnectionGet =new TranslateMyWordByUrlConnectionGet();
+        TranslateMyWordByUrlConnectionGet translateMyWordByUrlConnectionGet = new TranslateMyWordByUrlConnectionGet();
         try
         {
             translateMyWordByUrlConnectionGet.getByUrlConnection();
@@ -66,5 +93,12 @@ public class MainActivity extends Activity
         {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mSocketClient.close();
     }
 }
