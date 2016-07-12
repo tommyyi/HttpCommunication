@@ -16,8 +16,8 @@ public class Server
 				Socket socket = serverSocket.accept();
 				socket.setTcpNoDelay(true);
 				
-				Runnable runnable2read = new ReadRunnable(socket);
-				new Thread(runnable2read).start();
+				Runnable businessRunnable = new BusinessRunnable(socket);
+				new Thread(businessRunnable).start();
 			}
 		} catch (Exception e)
 		{

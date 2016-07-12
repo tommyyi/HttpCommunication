@@ -8,7 +8,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.Socket;
 
-final class ReadRunnable implements Runnable
+final class BusinessRunnable implements Runnable
 {
 	Socket localSocket;
 	private static InputStream inputStream;
@@ -18,7 +18,7 @@ final class ReadRunnable implements Runnable
 	private static Writer writer;
 	private static BufferedWriter bufferedWriter;
 
-	public ReadRunnable(Socket localSocket)
+	public BusinessRunnable(Socket localSocket)
 	{
 		super();
 		this.localSocket = localSocket;
@@ -42,23 +42,32 @@ final class ReadRunnable implements Runnable
 		{
 			while (true)
 			{
-				System.out.println(Thread.currentThread().getName() + ": checking reader\r\n");
+				System.out.println(Thread.currentThread().getName() + ": WAITING FOR INFORMATION...\r\n");
 				while(!bufferedReader.ready())
+				{
 					Thread.sleep(100);
-				System.out.println(Thread.currentThread().getName() + ": blocking from reading\r\n");
+				}
+				System.out.println(Thread.currentThread().getName() + ": READING...\r\n");
 				
 				String line = bufferedReader.readLine();
 				if(line!=null)
 				{
+					if(line.equals("closeConnection"))
+					{
+						System.out.println(Thread.currentThread().getName() + ": SOCKET IS CLOSED\r\n");
+						localSocket.close();
+						return;
+					}
+					
 					System.out.println(Thread.currentThread().getName() + ": "+line+"\r\n");
-					System.out.println(Thread.currentThread().getName() + ": reading over\r\n");
+					System.out.println(Thread.currentThread().getName() + ": READING OVER\r\n");
 					
 					String mString="Server: i have receive your message\n";
-					System.out.println(Thread.currentThread().getName() + ": writing preparing\r\n");
+					System.out.println(Thread.currentThread().getName() + ": WRITING PREPARING\r\n");
 					//outputStream.write(mString.getBytes());//it also works
 					bufferedWriter.write(mString);
 					bufferedWriter.flush();
-					System.out.println(Thread.currentThread().getName() + ": writing over\r\n");
+					System.out.println(Thread.currentThread().getName() + ": WRITING OVER\r\n");
 				}
 			}
 		} catch (Exception e)

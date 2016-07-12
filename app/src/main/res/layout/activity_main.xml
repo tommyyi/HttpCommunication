@@ -19,11 +19,13 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"/>
 
-    <TextView
-        android:gravity="center"
-        android:layout_marginTop="20dp"
+    <Button
+        android:layout_marginTop="30dp"
         android:layout_below="@id/findit"
-        android:id="@+id/textview"
+        android:onClick="closeConnection"
+        android:textStyle="bold|italic"
+        android:text="send heart!"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        tools:ignore="HardcodedText"/>
 </RelativeLayout>

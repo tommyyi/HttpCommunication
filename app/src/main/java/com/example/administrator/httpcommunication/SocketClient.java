@@ -88,6 +88,14 @@ public class SocketClient
                 catch (Exception e)
                 {
                     e.printStackTrace();
+                    try
+                    {
+                        mSocket.close();
+                    }
+                    catch (IOException e1)
+                    {
+                        e1.printStackTrace();
+                    }
                 }
             }
         };
@@ -119,6 +127,14 @@ public class SocketClient
                 catch (Exception e)
                 {
                     e.printStackTrace();
+                    try
+                    {
+                        mSocket.close();
+                    }
+                    catch (IOException e1)
+                    {
+                        e1.printStackTrace();
+                    }
                 }
             }
         };

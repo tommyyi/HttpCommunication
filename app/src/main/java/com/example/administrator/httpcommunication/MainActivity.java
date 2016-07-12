@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity
 {
-
-    private TextView mTextView;
     private SocketClient mSocketClient;
 
     @Override
@@ -18,7 +16,6 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextView = (TextView) findViewById(R.id.textview);
         mSocketClient = new SocketClient();
     }
 
@@ -75,7 +72,6 @@ public class MainActivity extends Activity
             @Override
             protected void onPostExecute(Object o)
             {
-                mTextView.setText(o.toString());
             }
         };
         String url2find = "http://fanyi.youdao.com/openapi.do?keyfrom=findtrth&key=678238549&type=data&doctype=json&version=1.1&q=good";
@@ -98,7 +94,12 @@ public class MainActivity extends Activity
     @Override
     protected void onDestroy()
     {
-        super.onDestroy();
         mSocketClient.close();
+        super.onDestroy();
+    }
+
+    public void closeConnection(View view)
+    {
+        mSocketClient.sendAndRcv("closeConnection\n");
     }
 }
