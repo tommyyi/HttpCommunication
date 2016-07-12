@@ -19,7 +19,7 @@ import java.net.Socket;
  */
 public class SocketClient
 {
-    public static final int SIZE = 200;
+    public static final int SIZE = 1000;
     private String ip = "172.16.109.1";
     private int port = 12345;
     private OutputStream mOutputStream;
@@ -37,7 +37,8 @@ public class SocketClient
 
     public SocketClient()
     {
-        new AsyncTask<Void,Void,Void>(){
+        new AsyncTask<Void, Void, Void>()
+        {
 
             @Override
             protected Void doInBackground(Void... params)
@@ -45,15 +46,15 @@ public class SocketClient
                 try
                 {
                     mSocket = new Socket(ip, port);
-                    mSocket.setTcpNoDelay(true);
+                    //mSocket.setTcpNoDelay(true);
 
                     mOutputStream = mSocket.getOutputStream();
                     mWriter = new OutputStreamWriter(mOutputStream, "utf-8");
-                    mBufferedWriter = new BufferedWriter(mWriter,10);
+                    mBufferedWriter = new BufferedWriter(mWriter, 10);
 
                     mInputStream = mSocket.getInputStream();
                     mReader = new InputStreamReader(mInputStream, "utf-8");
-                    mMBufferedReader = new BufferedReader(mReader,10);
+                    mMBufferedReader = new BufferedReader(mReader, 10);
                 }
                 catch (IOException e)
                 {
@@ -66,7 +67,7 @@ public class SocketClient
 
     public void sendAndRcv(final String msg)
     {
-        if (mSocket==null||!mSocket.isConnected())
+        if (mSocket == null || !mSocket.isConnected())
         {
             return;
         }
@@ -79,8 +80,9 @@ public class SocketClient
                 try
                 {
                     Log.e("socket", "send ready");
-                    mOutputStream.write(msg.getBytes());//one write operation is corresponding to one TCP package
-                    mOutputStream.write(msg.getBytes());
+                    //mOutputStream.write(msg.getBytes());//one write operation is corresponding to one TCP package, it also works
+                    mBufferedWriter.write(msg);
+                    mBufferedWriter.flush();
                     Log.e("socket", "send over");
                 }
                 catch (Exception e)
@@ -98,24 +100,21 @@ public class SocketClient
             {
                 try
                 {
-                    while (mInputStream.available()<=0)
-                        Thread.sleep(100);
+                    Log.e("socket_reading", "1, checking reader");
 
-                    Log.e("socket_reading", "block from reading");
-                    byte[] buffer=new byte[SIZE];
-                    int count=0;
-                    int number=0;
-                    while(mInputStream.available()>=100)
+                    while (!mMBufferedReader.ready())
                     {
-                        number = mInputStream.read(buffer,count,100);
-                        count=count+number;
-                        Log.e("socket_reading", new String(buffer,0,count,"utf-8"));
+                        Thread.sleep(100);
                     }
-                    number=mInputStream.read(buffer,count,100);
-                    count=number+count;
-                    String ret=new String(buffer,0,count,"utf-8").replace("\r","");
-                    Log.e("socket_reading", ret);
-                    Log.e("socket_reading", "reading is over");
+
+                    Log.e("socket_reading", "2, blocking from reading");
+
+                    String line = mMBufferedReader.readLine();
+                    if (line != null)
+                    {
+                        Log.e("socket_reading", "3, "+line);
+                    }
+                    Log.e("socket_reading", "4, reading is over");
                 }
                 catch (Exception e)
                 {
@@ -130,27 +129,18 @@ public class SocketClient
     {
         try
         {
-            closeReader();
-            closeWriter();
+            mBufferedWriter.close();
+            mWriter.close();
+            mOutputStream.close();
+            mInputStream.close();
+            mReader.close();
+            mMBufferedReader.close();
+
             mSocket.close();
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-    }
-
-    private void closeWriter() throws IOException
-    {
-        mBufferedWriter.close();
-        mWriter.close();
-        mOutputStream.close();
-    }
-
-    private void closeReader() throws IOException
-    {
-        mInputStream.close();
-        mReader.close();
-        mMBufferedReader.close();
     }
 }

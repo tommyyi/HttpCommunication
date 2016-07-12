@@ -50,7 +50,7 @@ public class MainActivity extends Activity
             }
         }
 
-        mSocketClient.sendAndRcv("client: i come from client");
+        mSocketClient.sendAndRcv("client: i come from client\n");
     }
 
     public void translateMyWordByHttpGet()
